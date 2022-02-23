@@ -6,7 +6,7 @@ terraform {
     key     = "terraform-kkp.tfstate"
     encrypt = true
 
-    dynamodb_table = "terraform-state-kkp-locks"
+    dynamodb_table = "terraform-state-kkp-locks-axgoejxazgfd"
   }
 }
 

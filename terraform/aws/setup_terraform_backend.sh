@@ -34,7 +34,7 @@ set +x
 printf "Terraform state bucket name: %s\n" "${TF_STATE_BUCKET_NAME}"
 
 aws dynamodb create-table \
-  --table-name terraform-state-kkp-locks \
+  --table-name terraform-state-kkp-locks-axgoejxazgfd \
   --attribute-definitions AttributeName=LockID,AttributeType=S \
   --key-schema AttributeName=LockID,KeyType=HASH \
   --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
