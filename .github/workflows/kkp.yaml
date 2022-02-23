@@ -1,6 +1,5 @@
 name: "KKP delivery pipeline with GitOps"
 
-# dummy change
 on:
   push:
     branches:
