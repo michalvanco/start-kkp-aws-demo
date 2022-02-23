@@ -1,0 +1,62 @@
+apiVersion: operator.kubermatic.io/v1alpha1
+kind: KubermaticConfiguration
+metadata:
+    name: kubermatic
+    namespace: kubermatic
+spec:
+    ingress:
+        domain: michal-kkp-aws-gh.lab.kubermatic.io
+        certificateIssuer:
+            apiGroup: null
+            kind: ClusterIssuer
+            name: letsencrypt-prod
+        className: nginx
+    auth:
+        clientID: kubermatic
+        issuerClientID: kubermaticIssuer
+        skipTokenIssuerTLSVerify: true
+        tokenIssuer: https://michal-kkp-aws-gh.lab.kubermatic.io/dex
+        issuerClientSecret: ENC[AES256_GCM,data:yuN46dCwrzMTsNK5Z2yrh+lZ6mMPfTo2HbleQRCeQqg=,iv:vksigJbJRGr7ta6oCBs3kDZzD2MlYPSmSdyFtd3Wl2I=,tag:23z+yRHCnu6M0jGgbRXV+Q==,type:str]
+        issuerCookieKey: ENC[AES256_GCM,data:uKWSE5R49SHD4tUnEb5grQf7TrYLcBWgebt2cDqjTLM=,iv:HZpuLGSV8UtWaRmEWE9/ZZX8gBlBkADiNY3j6DpVbmk=,tag:okcXsdaktGeSpEr2nNhiEg==,type:str]
+        serviceAccountKey: ENC[AES256_GCM,data:4LSkBzARxWrsDBr184Q1T0ds3sCrin+XJSATOeHSK8c=,iv:k4AD2/vzEy+WdG+2EPsiZiLbcm4/9wPc7KjoiJ73Fjw=,tag:XO2MhdsT60EUiDLxG6mjEw==,type:str]
+        issuerRedirectURL: https://michal-kkp-aws-gh.lab.kubermatic.io/api/v1/kubeconfig
+    featureGates:
+        # exposes an HTTP endpoint for generating kubeconfig
+        # for a cluster that will contain OIDC tokens
+        OIDCKubeCfgEndpoint:
+            enabled: false
+        # configures the flags on the API server to use
+        # OAuth2 identity providers
+        OpenIDAuthPlugin:
+            enabled: false
+    ui:
+        # enable shared kubeconfig feature in the dashboard
+        config: |-
+            {
+              "share_kubeconfig": false
+            }
+    # disable default ETCD backups for user clusters (this is old way of configuring backup controllers up to 2.18)
+    # with 2.19+ new controllers for backups are not activated until backup destinations are defined on Seed resource
+    seedController:
+        backupRestore:
+            enabled: false
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age14yjruaun04tggl34kjhan8h0zumfg8g3xnw7zdyyknzvn2v939fscmrmsu
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBiYXlOcHFYRGZQMVNUQm9S
+            Y3NBNWRBQzRVOTVlVENmNFdHRlBKdWdtMTM4Ck12dmhEMlRLclNVS28vZDBMcXYv
+            NForRWJHcWxVd2xRZG5udGpmSG4xeXcKLS0tIE9rQ0RMREZsc21ZMkRFVVFoait5
+            elZuUmZqWU9Tc1BoTjFSVVYwNDhoUzAK6T57k8BPDyOLUq0Hqe2J/1F+R1vBukaQ
+            AErX46ycXpi9gPxPGGV9+QitMlCrhrUotOD6TvpCIBDPHoXDPOU6gQ==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2022-02-23T11:40:00Z"
+    mac: ENC[AES256_GCM,data:fhaqSbAoBEQjGtkRW/5sLl4Xy8WJphHusp7FBZC5mlm7qCO88vbsAXp/b+1ZJslbDCjRcuJypIdnkk5u8kbLAwsoAHp9utSe3iKFvR2Z4PaDNXmWEnCIXnd3rrGhC0zqxaB2+ibkfxA2gHS89EfP0gazR365DSMDIIXdYeXIyTo=,iv:Cg6iUs1k9olUCpn5QhnOQPZOUgh3qluskVPPK1UDwzc=,tag:v8z3wN7bFejgvfEGpmBlRQ==,type:str]
+    pgp: []
+    encrypted_regex: (issuerClientSecret|issuerCookieKey|serviceAccountKey)
+    version: 3.7.1

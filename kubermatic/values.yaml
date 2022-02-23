@@ -1,0 +1,160 @@
+kubermaticOperator:
+    image:
+        tag: v2.19.0
+dex:
+    ingress:
+        host: michal-kkp-aws-gh.lab.kubermatic.io
+    certIssuer:
+        name: letsencrypt-prod
+        kind: ClusterIssuer
+    env:
+        - name: KUBERNETES_POD_NAMESPACE
+          value: oauth
+    staticPasswords:
+        - email: michal@kubermatic.com
+          hash: ENC[AES256_GCM,data:8tI1wtgvNszEF3HwdP/3jcnVyjznQdr1u4FqHVztBSAt1kLrHRJn3yYNYouMKoR6D3mOrdjzV82e+MMs,iv:DsgfTFhFbogC5ZvhPdEU5IE27Uxcyv+i/vVyZmVAq8U=,tag:B4gjlgEpkbE2gq1l55Loow==,type:str]
+          username: michal@kubermatic.com
+          userID: e343bbdb-551a-4985-adee-3ed452b6f643
+    clients:
+        - id: kubermatic
+          name: Kubermatic
+          secret: ENC[AES256_GCM,data:Hp5SMyR0qakpTpFzlCV1C3DycKyDgt0RTU/kgFC7JGY=,iv:Dj7p7HiosoA3c09tQ5+UlspUv+jUsUMrTGh0ib704sA=,tag:lBwq9N6YZsMrMpk1UoRDNA==,type:str]
+          RedirectURIs:
+            - https://michal-kkp-aws-gh.lab.kubermatic.io
+            - https://michal-kkp-aws-gh.lab.kubermatic.io/projects
+        - id: kubermaticIssuer
+          name: Kubermatic OIDC Issuer
+          secret: ENC[AES256_GCM,data:aiA3S8MvRPRmsxKo+cQgGg==,iv:bMGZOKRAfygNU5/yh/JyKv96hT6y/N5ziUzLw8/Pqts=,tag:PDkP8FeojoOw7ppRY0LGqg==,type:str]
+          RedirectURIs:
+            - https://michal-kkp-aws-gh.lab.kubermatic.io/api/v1/kubeconfig
+        - id: prometheus
+          name: Prometheus
+          secret: ENC[AES256_GCM,data:nHoovaJxUr72c4Zbgch9Kg==,iv:9EyzxICyzAAKYC5q+1swvRsIe11f7H6Hh4WwjmqhReM=,tag:dWgapkyAC4zsXkuDZ+GxXw==,type:str]
+          RedirectURIs:
+            - https://prometheus.michal-kkp-aws-gh.lab.kubermatic.io/oauth/callback
+        - id: alertmanager
+          name: Alertmanager
+          secret: ENC[AES256_GCM,data:14tO/6aRz8nDKWMvRi1Vmw==,iv:E4++ouJY3Ar6OotY/B5R4O7pojHhKGziP96XWYC9jJA=,tag:V5ffUw4aR/URPi/bGOP7ug==,type:str]
+          RedirectURIs:
+            - https://alertmanager.michal-kkp-aws-gh.lab.kubermatic.io/oauth/callback
+        - id: grafana
+          name: Grafana
+          secret: ENC[AES256_GCM,data:8Dow8GaIo0H+sPtfvqbFsw==,iv:D1ngJjos/UHCy6JYrV1hLzEWxDJgvmff3BaKU0tcDRo=,tag:JhfNk461HEkP22/foELYdg==,type:str]
+          RedirectURIs:
+            - https://grafana.michal-kkp-aws-gh.lab.kubermatic.io/oauth/callback
+        - id: karma
+          name: Karma
+          secret: ENC[AES256_GCM,data:FQxI6K5ui9l1IlGucEx2FQ==,iv:Ra06YFsMgTrC8w13CJCsQ4PwIFJ6jFDmNjZCjgXnFo4=,tag:VIuGE9+3vobg+yrnYFv3ig==,type:str]
+          RedirectURIs:
+            - https://karma.michal-kkp-aws-gh.lab.kubermatic.io/oauth/callback
+alertmanager:
+    host: alertmanager.michal-kkp-aws-gh.lab.kubermatic.io
+grafana:
+    user: admin
+    password: ENC[AES256_GCM,data:OJtL4S8an8+V1XR4BuoLsQ==,iv:qzkvN6y45fj6mEKt0vfKjWAVXvEGvjJELEhugZYrQuk=,tag:58nJ85Yy+DfvgOE2haVeCQ==,type:str]
+    provisioning:
+        configuration:
+            auto_assign_org_role: Editor
+            disable_login_form: false
+            root_url: https://grafana.michal-kkp-aws-gh.lab.kubermatic.io
+        datasources:
+            lokiServices:
+                - loki
+prometheus:
+    host: prometheus.michal-kkp-aws-gh.lab.kubermatic.io
+    storageSize: 125Gi
+    tsdb:
+        retentionTime: 7d
+    ruleFiles:
+        - /etc/prometheus/rules/general-*.yaml
+        - /etc/prometheus/rules/kubermatic-*.yaml
+        - /etc/prometheus/rules/managed-*.yaml
+iap:
+    oidc_issuer_url: https://michal-kkp-aws-gh.lab.kubermatic.io/dex
+    deployments:
+        prometheus:
+            name: prometheus
+            ingress:
+                host: prometheus.michal-kkp-aws-gh.lab.kubermatic.io
+            upstream_service: prometheus.monitoring.svc.cluster.local
+            upstream_port: 9090
+            client_id: prometheus
+            client_secret: ENC[AES256_GCM,data:SiTeag4o26pdglniydm3lQ==,iv:sW2tishDNzgwBpqNGLPF0Cxu2BrZ/Q/1H6Js57g9ZWI=,tag:KPSOYr880iE5uGvLmLGqkg==,type:str]
+            encryption_key: ENC[AES256_GCM,data:wcOdfv1S/Xli2wJVWEijUxUTkrmFX4FSvcDUwvC2SbU=,iv:UH65CHPtyEbeIufb/WxYP6L0eOJQIecg/o98gfi8mnM=,tag:hoyKhXd2bNNq21guiNpR1w==,type:str]
+            config:
+                scope: groups openid email
+                email_domains:
+                    - kubermatic.com
+                pass_user_headers: true
+                skip_auth_regex:
+                    - /-/health
+        alertmanager:
+            name: alertmanager
+            ingress:
+                host: alertmanager.michal-kkp-aws-gh.lab.kubermatic.io
+            upstream_service: alertmanager.monitoring.svc.cluster.local
+            upstream_port: 9093
+            client_id: alertmanager
+            client_secret: ENC[AES256_GCM,data:ueFDj69kotxi8k+yJhRC5A==,iv:zGOksLl4ou+NFoeCgYTticx+nWpxnchwm6sns81gBkg=,tag:M00wPpwSqgldM0a5P1tjxQ==,type:str]
+            encryption_key: ENC[AES256_GCM,data:bBGivB2lHjiDstgyIMfLwh4wCO6toS3ok7kPjSvtMs4=,iv:w2/LKK9PeZ7dryNVEFoedZNiBAjeNxwOHUFa4RfupBc=,tag:q2JttjsrnALHzd2MiEN9Qg==,type:str]
+            config:
+                scope: groups openid email
+                email_domains:
+                    - kubermatic.com
+                pass_user_headers: true
+                skip_auth_regex:
+                    - /-/health
+        grafana:
+            name: grafana
+            ingress:
+                host: grafana.michal-kkp-aws-gh.lab.kubermatic.io
+            upstream_service: grafana.monitoring.svc.cluster.local
+            upstream_port: 3000
+            client_id: grafana
+            client_secret: ENC[AES256_GCM,data:cXuYKowhJlt0BNsyC22RSw==,iv:cTiqJGkTjLLIWkV6m3Ru4LpDFWNniV/kKPquHX09QyY=,tag:sqxXrvGiIl9PGC7ZSEfqwA==,type:str]
+            encryption_key: ENC[AES256_GCM,data:7Ea/qHXM0qLY8KTTWvYratrGRPYzBR9nTZDFYjzEUik=,iv:GX/+DlvXKPJoTOlhYctO8tksjX/RcdSCi5decWqI7gY=,tag:dPmpRF1LZu3RSzk9uUyr3g==,type:str]
+            config:
+                scope: groups openid email
+                email_domains:
+                    - kubermatic.com
+                pass_user_headers: true
+                skip_auth_regex:
+                    - /api/health
+        karma:
+            name: karma
+            ingress:
+                host: karma.michal-kkp-aws-gh.lab.kubermatic.io
+            upstream_service: karma.monitoring.svc.cluster.local
+            upstream_port: 8080
+            client_id: karma
+            client_secret: ENC[AES256_GCM,data:aKRPJaov7KQWveF4ZtLIOg==,iv:yjRvvlUNahuTDT8ClubJOp+FQZpRpGlhDCzUn5GZYrc=,tag:2SHlI67yChCGzZL3jSfHRQ==,type:str]
+            encryption_key: ENC[AES256_GCM,data:KBG+svCBo4HlK2nWdCbFMu420LaBQO/CPqvqH+wEHBM=,iv:k7O+aVvW2TpsX/OjpKS+YzXHL8sWvhNVGai/REZDR+A=,tag:DDCCBW4xN7X798+6vRQkfw==,type:str]
+            config:
+                scope: groups openid email
+                email_domains:
+                    - kubermatic.com
+                pass_user_headers: true
+telemetry:
+    # uuid is the unique identifier of the client where the agent is running.
+    # This field is required and will print an error message when that entry is missing.
+    uuid: a0b72f5f-0175-4c8c-b1d1-68c3eb99ef1c
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age14yjruaun04tggl34kjhan8h0zumfg8g3xnw7zdyyknzvn2v939fscmrmsu
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBReEZ6QVd3RFpmTXU2Wm94
+            WVZjTUppR05Ma2NQeTBuVXFGYnozNjR1TFdBCmpxKzZFNmR6TnBXRnZTL01XeThn
+            NWYyQkt4d2lmaVBqbCsxczBLQ1I5RmsKLS0tIGdldHFyVlViTmhpQlAweTZRRjAz
+            akV3Q1BKT1MxVEVPOHNUZFhUQkNDR28KtswBKf8LuYOQA7zdngAkoshGR1yGcnUf
+            CCYRZn0MEXuBIwH295nWLO8P1ESd7hzs+HXKyCVRtgEObxAHuU/wSQ==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2022-02-23T11:40:00Z"
+    mac: ENC[AES256_GCM,data:RWaNKJ2DDE6hZtyKPvPfZ62VblYLDlW9SAGCnxxHN18y0YGaWyZcO0JUxL3wJ985lZ/xfToO4+ZnVaK7tZMLhCn/sG39re9vZ//c39UQB4SSklR1SnHKamVSwpdVyRi9nbVkLrQd6pAsfiuo4csTft3Ooj9J7hma9B5TkCqSTko=,iv:dWkBLyxlqZA/JvKaZJvV8gSVBcZ7Jh0l8soTihxnM2c=,tag:W0/mfaZ9R3zm02b5+WVaDw==,type:str]
+    pgp: []
+    encrypted_regex: (hash|secret|password|encryption_key|accessKey)
+    version: 3.7.1
