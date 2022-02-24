@@ -1,3 +1,4 @@
+# KKP Pipeline
 name: "KKP delivery pipeline with GitOps"
 
 on:

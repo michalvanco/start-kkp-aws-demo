@@ -1,5 +1,6 @@
 secrets.md
 .age.txt
+k8s_rsa*
 *.iml*
 *.private.env.json
 .DS_Store
