@@ -204,7 +204,7 @@ jobs:
         env:
           KUBECONFIG: kubeone/kubeconfig
         run: |
-          export VERSION=v2.19.0
+          export VERSION=v2.19.2
           wget https://github.com/kubermatic/kubermatic/releases/download/${VERSION}/kubermatic-ce-${VERSION}-linux-amd64.tar.gz
           tar -xzvf kubermatic-ce-${VERSION}-linux-amd64.tar.gz
           ./kubermatic-installer deploy \
